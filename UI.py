@@ -1,10 +1,11 @@
 from tkinter import *
+from tkinter import ttk
 import serial.tools.list_ports
 
 # Get the number of ports available
 ports = list(serial.tools.list_ports.comports())
-for p in ports:
-    print(p)
+ports = ['Casa', 'Perro']
+# Iniciamos UI
 myUi = Tk()
 myUi.title('Gases')
 myUi.geometry('650x450')
@@ -14,11 +15,11 @@ filename = PhotoImage(file="Gases.png")
 background_label = Label(myUi, image=filename)
 background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
+# Creamos los widgets que forman la UI
 Label(myUi, text='Puerto').grid(row=0, column=0)
-for p in ports:
-    dpl1.add_cascade(p)
-ent1 = Entry(myUi)
-mb.grid()
+dpl1 = ttk.Combobox(myUi)
+dpl1.values = ports
+dpl1.grid(row=0, column=1)
 Label(myUi, text='Esclavo').grid(row=0, column=2)
 ent2 = Entry(myUi)
 ent2.grid(row=0, column=3)
