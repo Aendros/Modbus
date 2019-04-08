@@ -4,6 +4,7 @@ import serial.tools.list_ports
 
 # Get the number of ports available
 ports = list(serial.tools.list_ports.comports())
+print(str(ports))
 ports = ['Casa', 'Perro']
 # Iniciamos UI
 myUi = Tk()
