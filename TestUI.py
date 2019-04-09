@@ -1,7 +1,8 @@
 import minimalmodbus
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import serial.tools.list_ports
+from tkinter import messagebox
 
 
 class BandejasApp():
@@ -59,7 +60,7 @@ class BandejasApp():
        '''
         #guardo sólo la primera palabra del string
         puerto = str(self.puertos.get()).split()[0]
-        slave = self.parent.ent2.get()
+        slave = int(self.parent.ent2.get())
         #TEST
         print(puerto, "  ", slave)
         self.instrument = minimalmodbus.Instrument(puerto, slave, mode='rtu')
@@ -68,30 +69,38 @@ class BandejasApp():
         self.instrument.serial.parity = minimalmodbus.serial.PARITY_NONE
         self.instrument.serial.stopbits = 1
         self.instrument.close_port_after_each_call = FALSE
-        self.refresh_data
+        self.refresh_data()
         #datum=[SEN_01, SEN_02, SEN_03, SEN_04, SEN_05, SEN_06, SEN_07, SEN_08, SEN_FA_VIS, SEN_FAL_AD, SEN_FAL_AD_AU, SEN_FA_I_1, SEN_FA_I_2, SEN_FL_VIS, SEN_FA_GEN, SEN_FA_ASP]
 
     def refresh_data(self):
 
         print("Dentro de la función de lectura de datos")
-        SEN_01 = self.instrument.read_register(4096, 0, 4)  # Read Analog Input Register (HR)
-        SEN_02 = self.instrument.read_register(4097, 0, 4)
-        SEN_03 = self.instrument.read_register(4098, 0, 4)
-        SEN_04 = self.instrument.read_register(4099, 0, 4)
-        SEN_05 = self.instrument.read_register(4100, 0, 4)
-        SEN_06 = self.instrument.read_register(4101, 0, 4)
-        SEN_07 = self.instrument.read_register(4102, 0, 4)
-        SEN_08 = self.instrument.read_register(4103, 0, 4)
-        FA_VIS = self.instrument.read_register(4352, 0, 4)
-        FAL_AD = self.instrument.read_register(4353, 0, 4)
-        FAL_AD_AU = self.instrument.read_register(4354, 0, 4)
-        FA_I_1 = self.instrument.read_register(4355, 0, 4)
-        FA_I_2 = self.instrument.read_register(4356, 0, 4)
-        FL_VIS = self.instrument.read_register(4357, 0, 4)
-        FA_GEN = self.instrument.read_register(4358, 0, 4)
-        FA_ASP = self.instrument.read_register(4359, 0, 4)
+        SEN_01 = self.leer_registro(4096, 0, 4)  # Read Analog Input Register (HR)
+        SEN_02 = self.leer_registro(4097, 0, 4)
+        SEN_03 = self.leer_registro(4098, 0, 4)
+        SEN_04 = self.leer_registro(4099, 0, 4)
+        SEN_05 = self.leer_registro(4100, 0, 4)
+        SEN_06 = self.leer_registro(4101, 0, 4)
+        SEN_07 = self.leer_registro(4102, 0, 4)
+        SEN_08 = self.leer_registro(4103, 0, 4)
+        FA_VIS = self.leer_registro(4352, 0, 4)
+        FAL_AD = self.leer_registro(4353, 0, 4)
+        FAL_AD_AU = self.leer_registro(4354, 0, 4)
+        FA_I_1 = self.leer_registro(4355, 0, 4)
+        FA_I_2 = self.leer_registro(4356, 0, 4)
+        FL_VIS = self.leer_registro(4357, 0, 4)
+        FA_GEN = self.leer_registro(4358, 0, 4)
+        FA_ASP = self.leer_registro(4359, 0, 4)
         print(SEN_01, SEN_02, SEN_03, SEN_04, SEN_05, SEN_06, SEN_07, SEN_08, FA_VIS, FAL_AD,
-         FAL_AD_AU, FA_I_1, FA_I_2, FL_VIS, FA_GEN, FA_ASP)
+        FAL_AD_AU, FA_I_1, FA_I_2, FL_VIS, FA_GEN, FA_ASP)
+
+    def leer_registro(self, reg, dec, fun):
+
+        try:
+            value = self.instrument.read_register(reg, dec, fun)
+            return value
+        except IOError:
+            messagebox.showinfo("Algo ha ido mal al leer el registro: ", reg)
 
 if __name__ == '__main__':
     root = Tk()
