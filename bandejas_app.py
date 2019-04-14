@@ -10,6 +10,7 @@ class bandejas_app():
 	def __init__(self):
 		super(bandejas_app, self).__init__()
 		self.main_window = Tk()
+		self.main_window.title('Bandejas Gases')
 		self.main_window.resizable(width='FALSE', height='FALSE')
 		#self.main_window.geometry('1024x600')
 		self.frame1 = Frame(self.main_window, bg='grey', padx=5, pady=5, height=45, width=1024)
@@ -18,8 +19,13 @@ class bandejas_app():
 		
 		# Preguntamos por los puertos COM Disponibles
 		ports = serial.tools.list_ports.comports(include_links=FALSE)
-		# TEST
-		print(ports)
+
+		# Creamos lista para los datos a leer
+		# Datos de entrada discreta
+		self.ent_discret = [4096, 4097, 4098, 4099, 4100, 4101, 4102, 4103, 4352, 4353, 4354, 4355,
+		4356, 4357, 4358, 4359]
+		self.ent_regis = [12288, 12289, 12290, 12291, 12292, 12544, 12545, 12546, 12547, 12548, 12549,
+		12550, 12551, 13312, 13313, 13314, 13315, 13316]
 
 		# Creamos los widgets que forman el frame1
 		Label(self.frame1, text='Puerto', bg="grey").grid(row=0, column=0)
@@ -27,57 +33,36 @@ class bandejas_app():
 		self.combo1["values"] = ports
 		self.combo1.grid(row=0, column=1)
 		Label(self.frame1, text='Esclavo', bg="grey").grid(row=0, column=2)
-		self.ent2 = Entry(self.frame1)
+		self.ent2 = Spinbox(self.frame1, from_=0, to=100)
 		self.ent2.grid(row=0, column=3)
-		self.conn_button = Button(self.frame1, text='Conectar', command=self.conect)
+		self.conn_button = Button(self.frame1, text='Configurar', command=self.conect)
 		self.conn_button.grid(row=0, column=4)
+		Label(self.frame1, text="Lecturas/minuto", bg="grey").grid(row=0, column=5)
+		self.vel = Scale(self.frame1, from_=2, to=30, resolution=2, orient=HORIZONTAL)
+		self.vel.set(2)
+		self.vel.grid(row=0, column=6)
 
         # Creamos los widgets que forman el frame2
-		self.b_sen01 = Label(self.frame2, text='sen_01', width=10)
-		self.b_sen01.grid(row=2, column=0)
-		self.b_sen02 = Label(self.frame2, text='sen_02', width=10)
-		self.b_sen02.grid(row=3, column=0)
-		self.b_sen03 = Label(self.frame2, text='sen_03', width=10)
-		self.b_sen03.grid(row=4, column=0)
-		self.b_sen04 = Label(self.frame2, text='sen_04', width=10)
-		self.b_sen04.grid(row=5, column=0)
-		self.b_sen05 = Label(self.frame2, text='sen_05', width=10)
-		self.b_sen05.grid(row=6, column=0)
-		self.b_sen06 = Label(self.frame2, text='sen_06', width=10)
-		self.b_sen06.grid(row=7, column=0)
-		self.b_sen07 = Label(self.frame2, text='sen_07', width=10)
-		self.b_sen07.grid(row=8, column=0)
-		self.b_sen08 = Label(self.frame2, text='sen_08', width=10)
-		self.b_sen08.grid(row=9, column=0)
-		self.b_fa_vis = Label(self.frame2, text='fa_vis', width=10)
-		self.b_fa_vis.grid(row=10, column=0)
-		self.b_fal_ad = Label(self.frame2, text='fal_ad', width=10)
-		self.b_fal_ad.grid(row=11, column=0)
-		self.b_fal_ad_au = Label(self.frame2, text='fal_ad_au', width=10)
-		self.b_fal_ad_au.grid(row=12, column=0)
-		self.b_fa_i_1 = Label(self.frame2, text='fa_i_1', width=10)
-		self.b_fa_i_1.grid(row=13, column=0)
-		self.b_fa_i_2 = Label(self.frame2, text='fa_i_2', width=10)
-		self.b_fa_i_2.grid(row=14, column=0)
-		self.b_fl_vis = Label(self.frame2, text='fl_vis', width=10)
-		self.b_fl_vis.grid(row=15, column=0)
-		self.b_fa_gen = Label(self.frame2, text='fa_gen', width=10)
-		self.b_fa_gen.grid(row=16, column=0)
-		self.b_fa_asp = Label(self.frame2, text='fa_asp', width=10)
-		self.b_fa_asp.grid(row=17, column=0)
+		self.data_frame2 = []
+		self.labels_frame2 = ['EST_COM','COM_OPC','MODO_FUN', 'ERROR_OPC', 'TEMP_INT', 'sen_01', 'sen_02', 'sen_03', 'sen_04', 'sen_05', 'sen_06', 'sen_07', 'sen_08', 'fa_vis', 'fal_ad',
+		      'fal_ad_au', 'fa_i_1', 'fa_i_2', 'fl_vis', 'fa_gen', 'fa_asp']
+		self.labels_list = []
+		for x in range(0, len(self.labels_frame2)):
+			self.labels_list.append(Label(self.frame2, text=self.labels_frame2[x], width=10))
+			self.labels_list[x].grid(row=(3+x), column=0)
 
-		#Creamos los widgets que forman el frame3
+		# Creamos los widgets que forman el frame3
+		self.data_frame3 = []
 		self.filename = PhotoImage(file="Gases.png")
 		self.cv = tk.Canvas(self.frame3, width=650, height=450)
 		self.cv.create_image(0,0, anchor=tk.NW, image=self.filename)
-		self.cv.create_text(65,  235, text="Oxígeno")
-		self.cv.create_text(165,  235, text="Monóxido")
-		self.cv.create_text(265,  235, text="Humedad")
-		self.cv.create_text(365,  235, text="Temperatura")
-		self.cv.create_text(465,  235, text="Opacidad")
-		self.cv.create_text(565,  235, text="PLA")
+		self.list_text_frame3 = []
+		self.labels_frame3 = ['Oxígeno', 'Monóxido', 'Humedad', 'Temperatura', 'Opacidad', 'PLA']
+		for x in range(0, len(self.labels_frame3)):
+			self.list_text_frame3.append(self.cv.create_text((x*100 + 65),  235, text=self.labels_frame3[x])) 
 		self.cv.pack()
 
+		# Cargamos los frames creados e iniciamos la aplicación 
 		self.frame1.pack(side=TOP, fill=X)
 		self.frame2.pack(side=LEFT, fill=Y)
 		self.frame3.pack(side=RIGHT)
@@ -90,7 +75,6 @@ class bandejas_app():
 		# guardo sólo la primera palabra del string
 		puerto = str(self.combo1.get()).split()[0]
 		slave = int(self.ent2.get())
-
 		# TEST
 		print(puerto, "  ", slave)
 		self.instrument = minimalmodbus.Instrument(puerto, slave, mode='rtu')
@@ -99,31 +83,41 @@ class bandejas_app():
 		self.instrument.serial.parity = minimalmodbus.serial.PARITY_NONE
 		self.instrument.serial.stopbits = 1
 		self.instrument.close_port_after_each_call = FALSE
-		self.conn_button.configure(state="pressed")
-		self.refresh_data()
 
-	def refresh_data(self):
+		self.conn_button.configure(text="Configurado", bg='green')
+		self.read_data()
+
+	def read_data(self):
 		"""Función de refresco de datos"""
 
 		print("Dentro de la función de lectura de datos")
-		sen_01 = self.leer_registro(4096, 0, 4)  # Read Analog Input Register (HR)
-		sen_02 = self.leer_registro(4097, 0, 4)
-		sen_03 = self.leer_registro(4098, 0, 4)
-		sen_04 = self.leer_registro(4099, 0, 4)
-		sen_05 = self.leer_registro(4100, 0, 4)
-		sen_06 = self.leer_registro(4101, 0, 4)
-		sen_07 = self.leer_registro(4102, 0, 4)
-		sen_08 = self.leer_registro(4103, 0, 4)
-		fa_vis = self.leer_registro(4352, 0, 4)
-		fal_ad = self.leer_registro(4353, 0, 4)
-		fal_ad_au = self.leer_registro(4354, 0, 4)
-		fa_i_1 = self.leer_registro(4355, 0, 4)
-		fa_i_2 = self.leer_registro(4356, 0, 4)
-		fl_vis = self.leer_registro(4357, 0, 4)
-		fa_gen = self.leer_registro(4358, 0, 4)
-		fa_asp = self.leer_registro(4359, 0, 4)
-		print(sen_01, sen_02, sen_03, sen_04, sen_05, sen_06, sen_07, sen_08, fa_vis, fal_ad,
-		      fal_ad_au, fa_i_1, fa_i_2, fl_vis, fa_gen, fa_asp)
+		tiempo = 60000//(self.vel.get())
+		self.main_window.after(tiempo, self.read_data)
+
+		# Lectura de las entradas discretas
+		for x in range(0, len(self.ent_discret)):
+			self.data_frame2.append(self.leer_entrada(self.ent_discret[x], 2))
+			print(self.ent_discret[x], ' = ', self.data_frame2[x])
+
+		# Lectura de registros, los cinco primeros se guardan son del frame2
+		for x in range(0, 5):
+			self.data_frame2.insert(x, self.leer_registro(self.ent_regis[x], 0, 4))
+			print(self.ent_regis[x], ' = ', self.data_frame2[x])
+		print('Data frame2 guardado')
+		for x in range(5, len(self.ent_regis)):
+			self.data_frame3.append(self.leer_registro(self.ent_regis[x], 0, 4))
+			print(self.ent_regis[x], ' = ', self.data_frame3[x-5])
+		print('Data frame3 guardado')
+		self.print_data()
+
+	def leer_entrada(self, reg, fun ):
+		"""función para lectura de entradas discretas"""
+		try:
+			value = self.instrument.read_bit(reg, fun)
+			return value
+		except IOError:
+			messagebox.showinfo("Información", "Algo ha ido mal al leer el registro: {}".format(reg))
+
 
 	def leer_registro(self, reg, dec, fun):
 		"""función para lectura de datos"""
@@ -133,5 +127,19 @@ class bandejas_app():
 		    return value
 		except IOError:
 		    messagebox.showinfo("Información", "Algo ha ido mal al leer el registro: {}".format(reg))
+
+	def print_data(self):
+		print('Dentro de la función de escritura de datos')
+		# Recorremos la lista de datos para el frame dos, pero
+		# saltándonos las primeras cinco posiciones que están reservadas
+		#para otros registros que leeremos mas tarde
+		for x in range(0, len(self.labels_list)):
+			if self.data_frame2[x] != 0:
+				self.labels_list[x].configure(bg='green')
+			else:
+				self.labels_list[x].configure(bg='red')
+		for x in range(0, len(self.list_text_frame3)):
+			self.cv.itemconfigure(self.list_text_frame3[x], text=self.data_frame3[x])
+
 
 app = bandejas_app()
