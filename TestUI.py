@@ -1,8 +1,9 @@
-import minimalmodbus
 from tkinter import *
-from tkinter import ttk
-import serial.tools.list_ports
 from tkinter import messagebox
+from tkinter import ttk
+
+import minimalmodbus
+import serial.tools.list_ports
 
 
 class BandejasApp:
