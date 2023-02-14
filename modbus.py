@@ -2,12 +2,12 @@
 import minimalmodbus
 
 
-def create_conn(puerto, slave):
-    ''' 
-    Creacion de la comunicación RTU y se mantendrá abierta hasta 
-    que se cierre la aplicación
-    '''
-    instrument = minimalmodbus.Instrument(puerto, slave,minimalmodbus.MODE_RTU)  # port name, slave address (in decimal)
+def create_conn():
+    #Creacion de la comunicación RTU y se mantenerto, slave):
+    # drá abierta hasta
+    #que se cierre la aplicación
+
+    instrument = minimalmodbus.Instrument("COM2", "1",minimalmodbus.MODE_RTU)  # port name, slave address (in decimal)
     instrument.serial.baudrate = 9600   # Baud
     instrument.serial.bytesize = 8
     instrument.serial.parity = minimalmodbus.serial.PARITY_NONE
@@ -35,7 +35,7 @@ def refresh_data(instrument):
     SEN_FL_VIS = instrument.read_register(4357, 0, 4)
     SEN_FA_GEN = instrument.read_register(4358, 0, 4)
     SEN_FA_ASP = instrument.read_register(4359, 0, 4)
-    print(SEN_01, SEN_02, SEN_03, SEN_04, SEN_05, SEN_06, SEN_07, SEN_08, SEN_FA_VIS, SEN_FAL_AD,
+    print([SEN_01, SEN_02, SEN_03, SEN_04, SEN_05, SEN_06, SEN_07, SEN_08, SEN_FA_VIS, SEN_FAL_AD,
           SEN_FAL_AD_AU, SEN_FA_I_1, SEN_FA_I_2, SEN_FL_VIS, SEN_FA_GEN, SEN_FA_ASP])
 
 

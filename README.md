@@ -1,5 +1,5 @@
 # Modbus
-Modbus application using python. This app is intended with learning purpouses and it should serve also as a tool for my own daily work. 
+Modbus application using python. This app is intended with learning purposes and it should serve also as a tool for my own daily work. 
 Still work in progress, just the idea...
 
 Variables a leer

@@ -7,10 +7,10 @@ import minimalmodbus
 import serial.tools.list_ports
 
 
-class bandejas_app():
+class BandejasApp:
 
     def __init__(self):
-        super(bandejas_app, self).__init__()
+        super(BandejasApp, self).__init__()
         self.main_window = Tk()
         self.main_window.title('Bandejas Gases')
         self.main_window.resizable(width='FALSE', height='FALSE')
@@ -84,13 +84,14 @@ class bandejas_app():
         self.main_window.mainloop()
 
     def conect(self):
-        # Creacion de la comunicación RTU y se mantendrá abierta hasta
+        # Creación de la comunicación RTU y se mantendrá abierta hasta
         # que se cierre la aplicación
 
-        # guardo sólo la primera palabra del string
+        # guardo solo la primera palabra del string
         puerto = str(self.combo1.get()).split()[0]
         slave = int(self.ent2.get())
-        # TEST
+
+        # imprimo valores introducidos por el usuario
         print(puerto, "  ", slave)
         self.instrument = minimalmodbus.Instrument(puerto, slave, mode='rtu')
         self.instrument.serial.baudrate = 1200  # Baud
@@ -128,7 +129,7 @@ class bandejas_app():
         self.print_data()
 
     def leer_entrada(self, reg, fun):
-        """función para lectura de entradas discretas"""
+        """Función para lectura de entradas discretas"""
         try:
             value = self.instrument.read_bit(reg, fun)
             return value
@@ -161,4 +162,4 @@ class bandejas_app():
                 self.list_text_frame3[x], text=self.data_frame3[x])
 
 
-app = bandejas_app()
+app = BandejasApp()
